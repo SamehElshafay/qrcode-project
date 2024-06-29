@@ -14,6 +14,8 @@ class Information extends StatefulWidget {
 
 class _InformationState extends State<Information> {
   Map<dynamic,dynamic> data ;
+  _InformationState(this.data);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,6 +173,4 @@ class _InformationState extends State<Information> {
       ),
     );
   }
-
-  _InformationState(this.data);
 }
