@@ -30,7 +30,7 @@ class _SplachScreenState extends State<SplachScreen> {
 
   map(){
     Timer(Duration(seconds: 5), () {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => TapToScan()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => TapToScan()));
     });
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:coding/Information.dart';
+import 'package:coding/Report.dart';
 import 'package:coding/ScanScreen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TapToScan extends StatefulWidget {
   const TapToScan({super.key});
@@ -20,6 +21,20 @@ class TapToScan extends StatefulWidget {
 class _TapToScanState extends State<TapToScan> {
   String scanedCode = "NONECODE" ;
   Map<dynamic,dynamic> information = {} ;
+  TextEditingController IP_ADDRESS_CONTROLLER = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeShared();
+  }
+
+  initializeShared() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    String? IPADD = await sp.getString("IP") ;
+    IP_ADDRESS_CONTROLLER = new TextEditingController(text: IPADD == null ? "" : IPADD );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,11 +53,46 @@ class _TapToScanState extends State<TapToScan> {
                     children: [
                       IconButton(
                         onPressed: (){
-                          // Navigator.of(context).pop();
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: Container(
+                                  height: 200,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: "اضف عنوان الطابعه" ,
+                                          hintTextDirection: TextDirection.rtl ,
+                                          hintStyle: TextStyle(
+                                            // fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        controller: IP_ADDRESS_CONTROLLER ,
+                                      ),
+                                      SizedBox(height: 20,),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                                          prefs.setString("IP", IP_ADDRESS_CONTROLLER.value.text);
+                                          setState(() {
+
+                                          });
+                                        },
+                                        child: Text("اضف")
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
                         },
                         icon: Icon(
                           size: 30,
-                          Icons.qr_code_scanner_sharp ,
+                          Icons.settings_outlined ,
                           color: Colors.white ,
                         )
                       ),
@@ -58,7 +108,7 @@ class _TapToScanState extends State<TapToScan> {
                       ) ,
                       IconButton(
                         onPressed: (){
-                          // Navigator.of(context).pop();
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Report(),));
                         },
                         icon: Icon(
                           size: 30,
@@ -137,7 +187,6 @@ class _TapToScanState extends State<TapToScan> {
 
                       });
                     });
-
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 50),
@@ -233,7 +282,7 @@ class _TapToScanState extends State<TapToScan> {
                     SizedBox(height: 20,),
                     ElevatedButton(
                       onPressed: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Information(information),));
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Information(information),));
                       },
                       child: Text(
                         "Information" ,
